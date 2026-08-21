@@ -1,0 +1,38 @@
+
+const StudioMotion = require('./motion-engine.js');
+
+module.exports = StudioMotion;
+module.exports.default = StudioMotion;
+
+module.exports.animate = StudioMotion.animate;
+module.exports.timeline = StudioMotion.timeline;
+module.exports.timer = StudioMotion.timer;
+module.exports.onScroll = StudioMotion.onScroll;
+module.exports.scrollTrigger = StudioMotion.scrollTrigger;
+module.exports.animatable = StudioMotion.animatable;
+module.exports.draggable = StudioMotion.draggable;
+module.exports.layout = StudioMotion.layout;
+module.exports.scope = StudioMotion.scope;
+module.exports.svg = StudioMotion.svg;
+module.exports.text = StudioMotion.text;
+module.exports.waapi = StudioMotion.waapi;
+module.exports.adapters = StudioMotion.adapters;
+module.exports.animateThree = StudioMotion.animateThree;
+module.exports.engine = StudioMotion.engine;
+module.exports.easings = StudioMotion.easings;
+module.exports.utils = StudioMotion.utils;
+module.exports.stagger = StudioMotion.stagger;
+module.exports.recipes = StudioMotion.recipes;
+module.exports.presets = StudioMotion.presets;
+module.exports.spring = StudioMotion.spring;
+module.exports.shake = StudioMotion.shake;
+module.exports.flip = StudioMotion.flip;
+module.exports.tilt = StudioMotion.tilt;
+module.exports.modal = StudioMotion.modal;
+module.exports.draw = StudioMotion.draw;
+module.exports.scramble = StudioMotion.scramble;
+module.exports.morph = StudioMotion.morph;
+module.exports.magnet = StudioMotion.magnet;
+module.exports.gridRipple = StudioMotion.gridRipple;
+module.exports.swarm = StudioMotion.swarm;
+module.exports.typewriter = StudioMotion.typewriter;

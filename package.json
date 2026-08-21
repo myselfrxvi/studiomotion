@@ -1,0 +1,48 @@
+{
+  "name": "studiomotion",
+  "version": "2.3.2",
+  "description": "High-performance physics animation engine with spring dynamics, 2D matrix staggers, ScrollTrigger, FLIP layout, SVG morphing, and 58+ built-in UI recipes.",
+  "main": "index.js",
+  "module": "src/index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./src/index.js",
+      "require": "./index.js"
+    }
+  },
+  "keywords": [
+    "animation",
+    "motion",
+    "spring-physics",
+    "studiomotion",
+    "timeline",
+    "draggable",
+    "stagger",
+    "flip-layout",
+    "threejs-animation",
+    "svg-animation",
+    "scroll-trigger",
+    "onscroll",
+    "kinetic-typography",
+    "javascript"
+  ],
+  "author": "myselfrxvi (https://github.com/myselfrxvi)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/myselfrxvi/StudioMotion.git"
+  },
+  "bugs": {
+    "url": "https://github.com/myselfrxvi/StudioMotion/issues"
+  },
+  "homepage": "https://studiomotion.vercel.app",
+  "license": "MIT",
+  "files": [
+    "src",
+    "index.js",
+    "motion-engine.js",
+    "index.d.ts",
+    "README.md"
+  ]
+}
