@@ -1,6 +1,4 @@
-/**
- * StudioMotion.js - Time-Indexed Timeline Orchestrator
- */
+
 import { clamp } from '../core/utils.js';
 import { GlobalEngine } from '../engine/engine.js';
 import { Animation } from '../animation/animation.js';

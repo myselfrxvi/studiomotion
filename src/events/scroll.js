@@ -1,6 +1,4 @@
-/**
- * StudioMotion.js - Scroll-Driven Animations & ScrollTrigger Engine
- */
+
 import { clamp } from '../core/utils.js';
 import { Animation } from '../animation/animation.js';
 
@@ -12,7 +10,7 @@ export class ScrollTriggerInstance {
     this.debug = !!config.debug;
     this.repeat = config.repeat !== false;
     this.sync = config.sync || config.scrub || false;
-    
+
     this.start = config.start || 'top 85%';
     this.end = config.end || 'bottom 15%';
 
@@ -30,7 +28,7 @@ export class ScrollTriggerInstance {
 
     this.isInView = false;
     this.progress = 0;
-    this.direction = 1; // 1 down, -1 up
+    this.direction = 1;
     this.lastScrollPos = 0;
     this.ticking = false;
 

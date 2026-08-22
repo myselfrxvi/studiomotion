@@ -1,6 +1,4 @@
-/**
- * StudioMotion.js - SVG Superpowers (createDrawable, createMotionPath, morphTo)
- */
+
 import { toArray } from '../core/utils.js';
 import { Animation } from '../animation/animation.js';
 

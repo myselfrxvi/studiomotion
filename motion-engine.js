@@ -237,10 +237,10 @@
       this.delay = config.delay || 0;
       this.endDelay = config.endDelay || 0;
       this.easing = typeof config.easing === 'function' ? config.easing : (EASINGS[config.easing] || EASINGS.spring);
-      this.direction = config.direction || 'normal'; 
+      this.direction = config.direction || 'normal';
       this.loop = config.loop !== undefined ? config.loop : 1;
       this.stagger = config.stagger || 0;
-      this.round = config.round || null; 
+      this.round = config.round || null;
 
       this.onBegin = config.onBegin || null;
       this.onUpdate = config.onUpdate || null;
@@ -828,7 +828,8 @@
       this.axis = config.axis || 'y';
       this.debug = !!config.debug;
       this.repeat = config.repeat !== false;
-      this.sync = config.sync || config.scrub || false; 
+      this.sync = config.sync || config.scrub !== undefined ? !!config.scrub : false;
+      this.scrubSmooth = typeof config.scrub === 'number' ? config.scrub : (config.smooth ? 0.1 : 0);
 
       this.start = config.start || 'top 85%';
       this.end = config.end || 'bottom 15%';
@@ -840,19 +841,25 @@
       this.onUpdate = config.onUpdate || null;
 
       this.animation = null;
+      this.timeline = config.timeline || null;
       if (config.animation) {
         const animCfg = { ...config.animation, targets: config.animation.targets || this.target, autoplay: false };
         this.animation = new Animation(animCfg);
       }
 
       this.progress = 0;
+      this.targetProgress = 0;
       this.scrollPosition = 0;
       this.isInView = false;
       this.direction = 1;
+      this.velocity = 0;
       this.lastScroll = 0;
+      this.lastScrollTime = performance.now();
       this.enabled = true;
+      this.rafId = null;
 
       this._onScroll = this._onScroll.bind(this);
+      this._smoothTick = this._smoothTick.bind(this);
       this.enable();
       this.refresh();
     }
@@ -865,8 +872,8 @@
 
       if (!this.target) return 0;
       const rect = this.target.getBoundingClientRect();
-      const vh = this.container === window ? window.innerHeight : this.container.clientHeight;
-      const scrollY = this.container === window ? window.scrollY : this.container.scrollTop;
+      const vh = this.container === window ? (window.innerHeight || document.documentElement.clientHeight) : this.container.clientHeight;
+      const scrollY = this.container === window ? (window.pageYOffset || document.documentElement.scrollTop || 0) : this.container.scrollTop;
 
       let targetOffset = rect.top + scrollY;
       if (targetPos === 'center') targetOffset += rect.height / 2;
@@ -883,17 +890,21 @@
 
     _onScroll() {
       if (!this.enabled || !this.target) return;
-      const currentScroll = this.container === window ? window.scrollY : this.container.scrollTop;
+      const now = performance.now();
+      const currentScroll = this.container === window ? (window.pageYOffset || document.documentElement.scrollTop || 0) : this.container.scrollTop;
+      const dt = Math.max(1, now - this.lastScrollTime);
+      this.velocity = (currentScroll - this.lastScroll) / dt;
       this.direction = currentScroll >= this.lastScroll ? 1 : -1;
       this.scrollPosition = currentScroll;
       this.lastScroll = currentScroll;
+      this.lastScrollTime = now;
 
       const startPx = this._parseThreshold(this.start, true);
       const endPx = this._parseThreshold(this.end, false);
       const totalDistance = Math.max(1, endPx - startPx);
 
       const rawProgress = Utils.clamp((currentScroll - startPx) / totalDistance, 0, 1);
-      this.progress = rawProgress;
+      this.targetProgress = rawProgress;
 
       const inNow = currentScroll >= startPx && currentScroll <= endPx;
 
@@ -912,10 +923,41 @@
         }
       }
 
-      if (this.sync && this.animation) {
-        this.animation.seek(rawProgress);
+      if (this.sync) {
+        if (this.scrubSmooth > 0) {
+          if (!this.rafId) {
+            this.rafId = requestAnimationFrame(this._smoothTick);
+          }
+        } else {
+          this.progress = rawProgress;
+          this._applyProgress(rawProgress);
+        }
+      } else {
+        this.progress = rawProgress;
+        if (this.onUpdate) this.onUpdate(this);
       }
+    }
 
+    _smoothTick() {
+      const diff = this.targetProgress - this.progress;
+      if (Math.abs(diff) > 0.0005) {
+        this.progress += diff * Math.min(1, Math.max(0.02, 1 - Math.exp(-this.scrubSmooth * 60)));
+        this._applyProgress(this.progress);
+        this.rafId = requestAnimationFrame(this._smoothTick);
+      } else {
+        this.progress = this.targetProgress;
+        this._applyProgress(this.progress);
+        this.rafId = null;
+      }
+    }
+
+    _applyProgress(p) {
+      if (this.animation) {
+        this.animation.seek(p);
+      }
+      if (this.timeline) {
+        this.timeline.seek(p);
+      }
       if (this.onUpdate) this.onUpdate(this);
     }
 
@@ -931,6 +973,10 @@
 
     disable() {
       this.enabled = false;
+      if (this.rafId) {
+        cancelAnimationFrame(this.rafId);
+        this.rafId = null;
+      }
       const targetScroll = this.container === window ? window : this.container;
       targetScroll.removeEventListener('scroll', this._onScroll);
     }
@@ -938,11 +984,33 @@
     kill() {
       this.disable();
       if (this.animation) this.animation.pause();
+      if (this.timeline) this.timeline.pause();
     }
   }
 
   function onScroll(config) {
     return new ScrollTriggerInstance(config);
+  }
+
+  function revealOnScroll(selector = '.reveal-on-scroll', opts = {}) {
+    const els = Utils.toArray(selector);
+    if (!els.length) return [];
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          el.classList.add('is-revealed');
+          if (opts.once !== false) obs.unobserve(el);
+          if (opts.onReveal) opts.onReveal(el);
+        }
+      });
+    }, {
+      threshold: opts.threshold || 0.15,
+      rootMargin: opts.rootMargin || '0px 0px -50px 0px'
+    });
+
+    els.forEach(el => observer.observe(el));
+    return observer;
   }
 
   const RECIPES = {
@@ -1197,6 +1265,8 @@
     text: Text,
     onScroll,
     scrollTrigger: onScroll,
+    revealOnScroll,
+    ScrollTrigger: ScrollTriggerInstance,
     waapi,
     adapters: Adapters,
     animateThree: Adapters.three,

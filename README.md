@@ -28,6 +28,8 @@ StudioMotion is engineered from the ground up for front-end developers who deman
 - 🔤 **Kinetic Text & Scrambler**: Letter-by-letter splitting and matrix hacker scramble deciphering built-in.
 - 🖊️ **SVG Drawing & Motion Paths**: Animate stroke dash offsets and guide elements along complex Bezier paths.
 - 🧊 **Three.js 3D WebGL & WAAPI**: Directly interpolate Three.js Vector3, Euler rotations, and offload to browser compositors.
+- 🔄 **FLIP Layout Transitions**: Seamless element reparenting and grid rearrangement with automatic inverse matrices.
+- 🎛️ **58+ Built-in UI Recipes**: One-liner drop-in animations for buttons, modals, cards, charts, and loaders.
 - 📦 **100% Tree-Shakeable ESM & TypeScript**: Complete autocomplete definitions included.
 
 ---
@@ -84,9 +86,14 @@ StudioMotion.animate({
 });
 ```
 
+### 3. CommonJS (Node / Bundlers)
+```javascript
+const { animate, timeline, onScroll } = require('studiomotion');
+```
+
 ---
 
-## 📖 Core Modules
+## 📖 Core Modules & Features
 
 ### 1. Spring Physics & Keyframes
 ```javascript
@@ -97,7 +104,7 @@ animate({
   translateX: 250,
   rotate: '1turn',
   duration: 1000,
-  // Custom spring parameters: mass, stiffness, damping
+  // Custom harmonic spring parameters: mass, stiffness, damping
   easing: 'spring(1, 120, 8)'
 });
 ```
@@ -111,7 +118,7 @@ animate({
   scale: [0, 1],
   rotate: [-15, 0],
   duration: 600,
-  // Radiates from center across a 10x10 matrix grid
+  // Radiates outward from center across a 10x10 matrix grid
   delay: stagger(40, { grid: [10, 10], from: 'center' }),
   easing: 'spring'
 });
@@ -151,7 +158,7 @@ tl.add({ targets: '#badge', scale: [0, 1], duration: 400, easing: 'spring' })
 tl.play();
 ```
 
-### 5. Kinetic Typography & Scramble
+### 5. Kinetic Typography & Matrix Scramble
 ```javascript
 import { text, animate, stagger } from 'studiomotion';
 
@@ -177,15 +184,18 @@ text.scramble('#cyberText', {
 ```javascript
 import { svg } from 'studiomotion';
 
-// Draw SVG path outline
-svg.createDrawable('#checkmark', { duration: 900, easing: 'easeOutQuart' });
+// Draw SVG stroke outline
+svg.createDrawable('#checkmark', { duration: 900, easing: 'easeOutCubic' });
 
-// Guide 3D icon along SVG curve
+// Guide element along SVG curve
 svg.createMotionPath('#rocket', '#curvePath', {
   autoRotate: true,
   duration: 2500,
   easing: 'easeInOutCubic'
 });
+
+// Smooth SVG path morphing
+svg.morphTo('#startPath', '#endPath', { duration: 1000, easing: 'spring' });
 ```
 
 ### 7. Physics Draggable with Inertia
@@ -196,11 +206,26 @@ draggable('.card', {
   inertia: true,
   bounds: '#container',
   snap: 20,
-  onDragEnd: (x, y) => console.log('Dropped at coordinates:', x, y)
+  onDrag: (x, y) => console.log('Dragging:', x, y),
+  onDragEnd: (x, y) => console.log('Dropped at:', x, y)
 });
 ```
 
-### 8. Three.js 3D WebGL Adapter
+### 8. FLIP Layout Transitions
+```javascript
+import { layout } from 'studiomotion';
+
+const flip = layout('.list-item');
+flip.record(); // Record initial bounding boxes
+
+// Rearrange DOM elements
+container.appendChild(item);
+
+// Smoothly interpolate from previous positions to new layout
+flip.play({ duration: 500, easing: 'spring' });
+```
+
+### 9. Three.js 3D WebGL Adapter
 ```javascript
 import * as THREE from 'three';
 import { animate } from 'studiomotion';
@@ -226,7 +251,7 @@ animate({
 });
 ```
 
-### 9. Framework Integration & Auto-Cleanup (`scope`)
+### 10. Framework Integration & Auto-Cleanup (`scope`)
 ```javascript
 // React Hook Example
 import { useEffect, useRef } from 'react';
@@ -253,6 +278,30 @@ export function Card() {
 
 ---
 
+## 🎨 58+ Built-in UI Recipes (`recipes.*`)
+
+StudioMotion includes production-ready UI animation recipes accessible via `recipes` or top-level shortcuts:
+
+| Category | Available Recipes |
+| :--- | :--- |
+| **Typography & Text** | `letterSplit`, `wordFloat`, `blurUnmask`, `gradientWave`, `typewriterBlink`, `counterRoll`, `perspectiveFold`, `neonFlicker`, `skewGlitch`, `waveStagger` |
+| **Bento & 3D Cards** | `tilt3D`, `bentoGlow`, `depthParallax`, `glassmorphismFlip`, `cardElevate`, `perspectiveFan`, `flip180`, `isometricPop`, `magneticSpring`, `cardUnfold` |
+| **Micro-Interactions** | `buttonPop`, `magnetic`, `bellWiggle`, `radarRings`, `heartPop`, `checkDraw`, `toggleSwitch`, `fluidRipple`, `accordionDrawer`, `statusDot` |
+| **Data & Dashboards** | `countUp`, `progressFill`, `circularGauge`, `audioEqualizer`, `tickerMarquee`, `stepperFlow`, `sparkline`, `donutChart`, `telemetryPing`, `skeletonShimmer` |
+| **Overlays & Transitions** | `modalDrop`, `sidebarFly`, `morphBlob`, `svgLogoDraw`, `planetaryOrbit`, `techParticles`, `tabSlider`, `backdropUnmask`, `cardStackRoll`, `curtainWipe` |
+| **Matrix & Swarm** | `gridRipple`, `fireflySwarm`, `typewriterHuman`, `particleExplode`, `magneticField` |
+
+```javascript
+import { spring, shake, tilt, modal, magnet, scramble, gridRipple } from 'studiomotion';
+
+// Trigger one-liner presets instantly
+tilt('.bento-card');
+magnet('.cta-button', '.button-wrapper');
+scramble('#status', 'CONNECTED');
+```
+
+---
+
 ## 🛠️ Comparison Matrix
 
 | Feature | StudioMotion.js | Anime.js v4.5 | GSAP 3 |
@@ -266,6 +315,8 @@ export function Card() {
 | **FLIP Layout Engine** | ✅ Built-in | ✅ Built-in | ⚠️ Paid plugin |
 | **58+ Instant UI Recipes** | ✅ Built-in (`recipes.*`) | ❌ None | ❌ None |
 | **TypeScript Included** | ✅ `index.d.ts` | ✅ Included | ✅ Included |
+
+---
 
 ## 👤 Author & Contact
 

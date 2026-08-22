@@ -1,6 +1,4 @@
-/**
- * StudioMotion.js - Main Animation Tween Executor
- */
+
 import { toArray, parseColor, clamp, lerp } from '../core/utils.js';
 import { easings } from '../easings/easings.js';
 import { GlobalEngine } from '../engine/engine.js';
@@ -13,11 +11,10 @@ export class Animation {
     this.endDelay = config.endDelay || 0;
     this.easing = typeof config.easing === 'function' ? config.easing : (easings[config.easing] || easings.spring);
     this.loop = config.loop || false;
-    this.direction = config.direction || 'normal'; // normal, reverse, alternate
+    this.direction = config.direction || 'normal';
     this.round = config.round || 0;
     this.keyframes = config.keyframes || null;
 
-    // Lifecycle Callbacks
     this.onBegin = config.onBegin || null;
     this.onUpdate = config.onUpdate || null;
     this.onRender = config.onRender || null;
@@ -32,7 +29,6 @@ export class Animation {
     this.completed = false;
     this.lastStepTime = 0;
 
-    // Parse Tweens
     this.tweens = this._parseTweens(config);
 
     if (config.autoplay !== false) {
@@ -97,7 +93,7 @@ export class Animation {
             fromVal = val[0];
             toVal = val[1];
           } else {
-            // Multi-step array
+
             const stepDur = this.duration / (val.length - 1);
             for (let k = 0; k < val.length - 1; k++) {
               tweens.push({
@@ -333,7 +329,6 @@ export class Animation {
       }
     }
 
-    // Apply Batched 3D Transforms
     transformMap.forEach((transforms, target) => {
       target._studioTransforms = Object.assign(target._studioTransforms || {}, transforms);
       const tf = target._studioTransforms;

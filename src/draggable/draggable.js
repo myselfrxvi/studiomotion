@@ -1,6 +1,4 @@
-/**
- * StudioMotion.js - Physics-Based Draggable Module with Inertia
- */
+
 import { toArray, clamp } from '../core/utils.js';
 import { Animation } from '../animation/animation.js';
 

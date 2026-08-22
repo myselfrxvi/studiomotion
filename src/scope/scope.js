@@ -1,6 +1,4 @@
-/**
- * StudioMotion.js - Context Scope & Animatable Proxy
- */
+
 import { Animation } from '../animation/animation.js';
 import { Timeline } from '../timeline/timeline.js';
 

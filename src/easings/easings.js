@@ -1,6 +1,3 @@
-/**
- * StudioMotion.js - Easings & Harmonic Springs
- */
 
 export const easings = {
   linear: t => t,

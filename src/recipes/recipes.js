@@ -1,12 +1,10 @@
-/**
- * StudioMotion.js - 58+ Built-in Production 2026 UI Recipes
- */
+
 import { toArray, stagger } from '../core/utils.js';
 import { Animation } from '../animation/animation.js';
 import { svg } from '../svg/svg.js';
 
 export const recipes = {
-  // 01-10: Hero & Kinetic Typography
+
   letterSplit: (targets, opts = {}) => new Animation(Object.assign({ targets, translateY: [40, 0], opacity: [0, 1], stagger: 30, duration: 600, easing: 'spring' }, opts)),
   wordFloat: (targets, opts = {}) => new Animation(Object.assign({ targets, translateY: [25, 0], scale: [0.92, 1], opacity: [0, 1], stagger: 80, duration: 700, easing: 'spring' }, opts)),
   blurUnmask: (targets, opts = {}) => new Animation(Object.assign({ targets, scale: [0.85, 1], opacity: [0, 1], filter: ['blur(12px)', 'blur(0px)'], duration: 650, easing: 'easeOutCubic' }, opts)),
@@ -18,7 +16,6 @@ export const recipes = {
   skewGlitch: (targets, opts = {}) => new Animation(Object.assign({ targets, skewX: [-25, 20, -10, 0], translateX: [-10, 10, 0], duration: 350, easing: 'easeInOutQuad' }, opts)),
   waveStagger: (targets, opts = {}) => new Animation(Object.assign({ targets, translateY: [-20, 0], stagger: 50, duration: 500, easing: 'spring' }, opts)),
 
-  // 11-20: 3D Cards, Bento & Surfaces
   tilt3D: (targets, opts = {}) => new Animation(Object.assign({ targets, rotateX: [25, 0], rotateY: [-25, 0], scale: [0.9, 1], duration: 800, easing: 'spring' }, opts)),
   bentoGlow: (targets, opts = {}) => new Animation(Object.assign({ targets, scale: [0.96, 1], duration: 500, easing: 'spring' }, opts)),
   depthParallax: (targets, opts = {}) => new Animation(Object.assign({ targets, translateY: [-30, 0], scale: [1.08, 1], duration: 750, easing: 'spring' }, opts)),
@@ -30,7 +27,6 @@ export const recipes = {
   magneticSpring: (targets, opts = {}) => new Animation(Object.assign({ targets, translateX: [-35, 35, 0], translateY: [-15, 15, 0], duration: 750, easing: 'spring' }, opts)),
   cardUnfold: (targets, opts = {}) => new Animation(Object.assign({ targets, scaleY: [0, 1], opacity: [0, 1], duration: 600, easing: 'spring' }, opts)),
 
-  // 21-30: Micro-Interactions, Feedback & Buttons
   buttonPop: (targets, opts = {}) => new Animation(Object.assign({ targets, scale: [0.82, 1.15, 1], duration: 400, easing: 'spring' }, opts)),
   magnetic: (targets, opts = {}) => new Animation(Object.assign({ targets, translateX: [-25, 25, 0], translateY: [-12, 12, 0], duration: 600, easing: 'spring' }, opts)),
   bellWiggle: (targets, opts = {}) => new Animation(Object.assign({ targets, rotate: [-22, 22, -14, 14, -6, 6, 0], duration: 750, easing: 'easeInOutQuad' }, opts)),
@@ -42,7 +38,6 @@ export const recipes = {
   accordionDrawer: (targets, opts = {}) => new Animation(Object.assign({ targets, translateY: [-15, 0], opacity: [0, 1], duration: 450, easing: 'spring' }, opts)),
   statusDot: (targets, opts = {}) => new Animation(Object.assign({ targets, scale: [0.75, 1.3], opacity: [0.5, 1], direction: 'alternate', loop: true, duration: 900, easing: 'easeInOutQuad' }, opts)),
 
-  // 31-40: Data, Numbers & Progress
   countUp: (targets, endVal = 100, opts = {}) => {
     const obj = { val: 0 };
     const els = toArray(targets);
@@ -67,7 +62,6 @@ export const recipes = {
   telemetryPing: (targets, opts = {}) => new Animation(Object.assign({ targets, scale: [0.5, 1.8], opacity: [1, 0], duration: 800, loop: true, easing: 'easeOutQuad' }, opts)),
   skeletonShimmer: (targets, opts = {}) => new Animation(Object.assign({ targets, translateX: [-100, 100], duration: 1200, loop: true, easing: 'easeInOutQuad' }, opts)),
 
-  // 41-50: Modals, Navigation & SVG FX
   modalDrop: (targets, opts = {}) => new Animation(Object.assign({ targets, translateY: [-80, 0], duration: 850, easing: 'easeOutBounce' }, opts)),
   sidebarFly: (targets, opts = {}) => new Animation(Object.assign({ targets, translateX: [80, 0], duration: 550, easing: 'spring' }, opts)),
   morphBlob: (targets, opts = {}) => new Animation(Object.assign({ targets, rotate: [0, 180, 360], scale: [0.85, 1.1, 1], duration: 1100, easing: 'easeInOutCubic' }, opts)),
@@ -79,7 +73,6 @@ export const recipes = {
   cardStackRoll: (targets, opts = {}) => new Animation(Object.assign({ targets, scale: [1, 0.9, 1], opacity: [1, 0.5, 1], duration: 600, easing: 'easeInOutQuad' }, opts)),
   curtainWipe: (targets, opts = {}) => new Animation(Object.assign({ targets, scaleY: [1, 0, 1], duration: 700, easing: 'easeInOutQuad' }, opts)),
 
-  // 51-58: Selective Advanced Presets from Anime.js v4.5.0
   gridRipple: (targets, opts = {}) => new Animation(Object.assign({
     targets,
     scale: [0.3, 1.35, 1],
@@ -192,4 +185,3 @@ export const recipes = {
 };
 
 export const presets = recipes;
-

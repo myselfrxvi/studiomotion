@@ -1,6 +1,4 @@
-/**
- * StudioMotion.js - Kinetic Typography (splitChars, splitWords, scramble)
- */
+
 import { toArray } from '../core/utils.js';
 import { Animation } from '../animation/animation.js';
 

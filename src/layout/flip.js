@@ -1,6 +1,4 @@
-/**
- * StudioMotion.js - FLIP Layout Transitions (First-Last-Invert-Play)
- */
+
 import { Animation } from '../animation/animation.js';
 
 export function layout(container, mutationCallback, opts = {}) {

@@ -1,6 +1,4 @@
-/**
- * StudioMotion.js - Micro-Scheduler Timer Module
- */
+
 import { GlobalEngine } from '../engine/engine.js';
 
 export class Timer {

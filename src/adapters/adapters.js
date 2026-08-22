@@ -1,6 +1,4 @@
-/**
- * StudioMotion.js - Adapters (Three.js WebGL & CSS Custom Variables) & WAAPI Compositor
- */
+
 import { toArray } from '../core/utils.js';
 import { Animation } from '../animation/animation.js';
 

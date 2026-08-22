@@ -1,6 +1,3 @@
-/**
- * StudioMotion.js - Global Master Ticker Engine
- */
 
 export class Engine {
   constructor() {

@@ -20,8 +20,7 @@ export interface AnimationOptions {
   loop?: boolean | number;
   direction?: 'normal' | 'reverse' | 'alternate';
   autoplay?: boolean;
-  
-  // Transform & Style Properties
+
   translateX?: number | string | [number | string, number | string];
   translateY?: number | string | [number | string, number | string];
   translateZ?: number | string | [number | string, number | string];
@@ -38,8 +37,7 @@ export interface AnimationOptions {
   borderRadius?: number | string | [number | string, number | string];
   strokeDashoffset?: number | [number, number];
   blur?: number | [number, number];
-  
-  // Event Lifecycle Callbacks
+
   onBegin?: (instance: AnimationInstance) => void;
   onUpdate?: (instance: AnimationInstance) => void;
   onRender?: (instance: AnimationInstance) => void;
@@ -104,28 +102,24 @@ export interface StudioMotionStatic {
   timer(config?: { duration?: number; onTick?: (elapsed: number) => void; onComplete?: () => void }): { start(): void; pause(): void };
   onScroll(config: ScrollTriggerConfig): ScrollTriggerInstance;
   scrollTrigger(config: ScrollTriggerConfig): ScrollTriggerInstance;
-  
-  // Reactive & Interactive Modules
+
   animatable<T extends object>(target: T, defaultOptions?: Partial<AnimationOptions>): T;
   draggable(target: string | HTMLElement | HTMLElement[], options?: { bounds?: any; inertia?: boolean; snap?: number; onDrag?: (x: number, y: number) => void; onDragEnd?: (x: number, y: number) => void }): void;
   layout(container: string | HTMLElement, mutationCallback: () => void, options?: Partial<AnimationOptions>): void;
   scope(root: string | HTMLElement, callback: (scoped: { animate: Function; timeline: Function; revert: Function }) => void): { revert: () => void };
-  
-  // SVG Modules
+
   svg: {
     createDrawable(targets: string | SVGPathElement | SVGPathElement[], options?: Partial<AnimationOptions>): AnimationInstance[];
     createMotionPath(target: string | HTMLElement, pathSelector: string | SVGPathElement, options?: Partial<AnimationOptions> & { autoRotate?: boolean }): AnimationInstance;
     morphTo(targetPath: string | SVGPathElement, endPathSelector: string | SVGPathElement, options?: Partial<AnimationOptions> & { precision?: number }): AnimationInstance;
   };
 
-  // Text Splitter & Scrambler Modules
   text: {
     splitChars(targets: string | HTMLElement | HTMLElement[], className?: string): HTMLElement[];
     splitWords(targets: string | HTMLElement | HTMLElement[], className?: string): HTMLElement[];
     scramble(targets: string | HTMLElement | HTMLElement[], endText?: string, options?: Partial<AnimationOptions> & { chars?: string }): AnimationInstance[];
   };
 
-  // WAAPI & Adapters
   waapi(targets: string | HTMLElement | HTMLElement[], keyframes: Keyframe[] | PropertyIndexedKeyframes, options?: KeyframeAnimationOptions): Animation[];
   adapters: {
     three(threeObject: any, props: any, options?: Partial<AnimationOptions>): AnimationInstance;
@@ -133,7 +127,6 @@ export interface StudioMotionStatic {
   };
   animateThree(threeObject: any, props: any, options?: Partial<AnimationOptions>): AnimationInstance;
 
-  // Engine, Math & Easings
   engine: { pause(): void; resume(): void; speed: number; fps: number };
   easings: Record<string, (t: number) => number>;
   utils: {
@@ -201,7 +194,6 @@ export const stagger: (delayMs: number | Function, options?: any) => (index: num
 export const recipes: Record<string, (targets: any, ...args: any[]) => AnimationInstance>;
 export const presets: Record<string, (targets: any, ...args: any[]) => AnimationInstance>;
 
-// Quick Action & Selective Helpers
 export const spring: (target: any, options?: any) => AnimationInstance;
 export const shake: (target: any, options?: any) => AnimationInstance;
 export const flip: (target: any, options?: any) => AnimationInstance;
