@@ -11,32 +11,53 @@ export type EasingType =
   | 'easeInOutQuad'
   | 'linear';
 
+export interface PropertyKeyframe<T = any> {
+  value: T | ((index: number, total: number) => T);
+  duration?: number;
+  delay?: number;
+  endDelay?: number;
+  easing?: EasingType | ((t: number) => number);
+}
+
+export type PropertyValue<T> =
+  | T
+  | [T, T]
+  | T[]
+  | PropertyKeyframe<T>[]
+  | ((index: number, total: number) => T);
+
 export interface AnimationOptions {
   targets: string | HTMLElement | HTMLElement[] | NodeListOf<HTMLElement> | object;
   duration?: number;
-  delay?: number;
+  delay?: number | ((index: number, total: number) => number);
+  endDelay?: number;
   easing?: EasingType | ((t: number) => number);
   stagger?: number | ((index: number, total: number) => number);
   loop?: boolean | number;
   direction?: 'normal' | 'reverse' | 'alternate';
   autoplay?: boolean;
+  timeScale?: number;
+  round?: number;
+  keyframes?: Array<Record<string, any>>;
 
-  translateX?: number | string | [number | string, number | string];
-  translateY?: number | string | [number | string, number | string];
-  translateZ?: number | string | [number | string, number | string];
-  scale?: number | [number, number];
-  scaleX?: number | [number, number];
-  scaleY?: number | [number, number];
-  rotate?: number | string | [number | string, number | string];
-  rotateX?: number | string | [number | string, number | string];
-  rotateY?: number | string | [number | string, number | string];
-  rotateZ?: number | string | [number | string, number | string];
-  skewX?: number | string | [number | string, number | string];
-  skewY?: number | string | [number | string, number | string];
-  opacity?: number | [number, number];
-  borderRadius?: number | string | [number | string, number | string];
-  strokeDashoffset?: number | [number, number];
-  blur?: number | [number, number];
+  translateX?: PropertyValue<number | string>;
+  translateY?: PropertyValue<number | string>;
+  translateZ?: PropertyValue<number | string>;
+  scale?: PropertyValue<number>;
+  scaleX?: PropertyValue<number>;
+  scaleY?: PropertyValue<number>;
+  rotate?: PropertyValue<number | string>;
+  rotateX?: PropertyValue<number | string>;
+  rotateY?: PropertyValue<number | string>;
+  rotateZ?: PropertyValue<number | string>;
+  skewX?: PropertyValue<number | string>;
+  skewY?: PropertyValue<number | string>;
+  opacity?: PropertyValue<number>;
+  borderRadius?: PropertyValue<number | string>;
+  strokeDashoffset?: PropertyValue<number | string>;
+  d?: PropertyValue<string>;
+  points?: PropertyValue<string>;
+  blur?: PropertyValue<number | string>;
 
   onBegin?: (instance: AnimationInstance) => void;
   onUpdate?: (instance: AnimationInstance) => void;
@@ -50,20 +71,31 @@ export interface AnimationInstance {
   play(): AnimationInstance;
   pause(): AnimationInstance;
   restart(): AnimationInstance;
+  reverse(): AnimationInstance;
   seek(progressRatio: number): AnimationInstance;
   progress: number;
   currentTime: number;
   duration: number;
+  timeScale: number;
   isRunning: boolean;
+  isReversed: boolean;
+  completed: boolean;
 }
 
 export interface TimelineInstance {
-  add(options: AnimationOptions, offset?: string | number): TimelineInstance;
+  add(item: AnimationOptions | AnimationInstance | TimelineInstance, offset?: string | number): TimelineInstance;
+  set(targets: any, props: Record<string, any>, offset?: string | number): TimelineInstance;
+  addCallback(fn: (tl: TimelineInstance) => void, offset?: string | number): TimelineInstance;
   addLabel(name: string, offset?: string | number): TimelineInstance;
   play(): TimelineInstance;
   pause(): TimelineInstance;
   restart(): TimelineInstance;
+  reverse(): TimelineInstance;
   seek(progressRatio: number): TimelineInstance;
+  duration: number;
+  currentTime: number;
+  timeScale: number;
+  isRunning: boolean;
 }
 
 export interface ScrollTriggerConfig {

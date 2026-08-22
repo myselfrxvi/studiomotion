@@ -67,7 +67,7 @@ export const swarm = (targets, opts) => recipes.fireflySwarm(targets, opts);
 export const typewriter = (target, endText, opts) => recipes.typewriterHuman(target, endText, opts);
 
 const StudioMotion = {
-  version: '2.3.2',
+  version: '2.3.3',
   animate,
   timeline,
   timer,

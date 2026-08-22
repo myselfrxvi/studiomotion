@@ -1,6 +1,6 @@
 {
   "name": "studiomotion",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "description": "High-performance physics animation engine with spring dynamics, 2D matrix staggers, ScrollTrigger, FLIP layout, SVG morphing, and 58+ built-in UI recipes.",
   "main": "index.js",
   "module": "src/index.js",
@@ -31,7 +31,7 @@
   "author": "myselfrxvi (https://github.com/myselfrxvi)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/myselfrxvi/StudioMotion.git"
+    "url": "git+https://github.com/myselfrxvi/StudioMotion.git"
   },
   "bugs": {
     "url": "https://github.com/myselfrxvi/StudioMotion/issues"

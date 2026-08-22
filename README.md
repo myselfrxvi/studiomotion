@@ -23,11 +23,13 @@ StudioMotion is engineered from the ground up for front-end developers who deman
 
 - 🪶 **Ultra Lightweight**: Under ~2.8 kB min+gzip with **zero dependencies**.
 - 🧲 **Analytical Harmonic Springs**: Physically accurate mass, stiffness, and damping calculations with natural overshoot.
+- ⏱️ **Per-Property Keyframe Tracks**: Independent duration, delay, easing, and keyframes per CSS/transform/object property.
+- 🎨 **Universal Complex String & Color Engine**: Interpolate `box-shadow`, `filter`, `clip-path`, `#hex` (3/4/6/8-digit), `rgb()`, `rgba()`, `hsl()`, and `hsla()`.
 - 📜 **Zero-Jitter Scroll Engine (`onScroll`)**: Scroll-driven viewport scrubbing and trigger callbacks without extra plugins.
 - 📐 **2D Matrix Grid Staggers**: Wave ripple delays radiating outward from center, edges, or custom grid coordinates.
 - 🔤 **Kinetic Text & Scrambler**: Letter-by-letter splitting and matrix hacker scramble deciphering built-in.
-- 🖊️ **SVG Drawing & Motion Paths**: Animate stroke dash offsets and guide elements along complex Bezier paths.
-- 🧊 **Three.js 3D WebGL & WAAPI**: Directly interpolate Three.js Vector3, Euler rotations, and offload to browser compositors.
+- 🖊️ **SVG Drawing & Auto-Segmenting Morph**: Animate stroke dash offsets, guide along motion paths, and morph arbitrary SVG `d` paths seamlessly.
+- 🧊 **First-Class Three.js 3D WebGL Adapter**: Direct position, Euler rotation (`'deg'`, `'turn'`, `'rad'`), uniform scaling, material color/opacity, and camera transitions.
 - 🔄 **FLIP Layout Transitions**: Seamless element reparenting and grid rearrangement with automatic inverse matrices.
 - 🎛️ **58+ Built-in UI Recipes**: One-liner drop-in animations for buttons, modals, cards, charts, and loaders.
 - 📦 **100% Tree-Shakeable ESM & TypeScript**: Complete autocomplete definitions included.
@@ -95,21 +97,45 @@ const { animate, timeline, onScroll } = require('studiomotion');
 
 ## 📖 Core Modules & Features
 
-### 1. Spring Physics & Keyframes
+### 1. Per-Property Keyframe Tracks & Spring Physics
+Every property can have its own independent timeline track, duration, delay, and easing:
+
 ```javascript
 import { animate } from 'studiomotion';
 
 animate({
-  targets: '#box',
-  translateX: 250,
-  rotate: '1turn',
-  duration: 1000,
-  // Custom harmonic spring parameters: mass, stiffness, damping
-  easing: 'spring(1, 120, 8)'
+  targets: '.box',
+  translateX: [
+    { value: 100, duration: 400, delay: 100, easing: 'easeOutQuad' },
+    { value: 300, duration: 800, easing: 'spring' }
+  ],
+  rotate: [
+    { value: '1turn', duration: 1200, easing: 'easeInOutCubic' }
+  ],
+  opacity: [
+    { value: 0.5, duration: 200 },
+    { value: 1, duration: 600 }
+  ]
 });
 ```
 
-### 2. 2D Matrix Grid Stagger Ripple
+### 2. Universal Complex String & Color Interpolation
+Seamlessly interpolates multi-number CSS strings, filters, shadows, and all color formats:
+
+```javascript
+import { animate } from 'studiomotion';
+
+animate({
+  targets: '.card',
+  filter: ['blur(12px) brightness(0.8)', 'blur(0px) brightness(1.2)'],
+  boxShadow: ['0 5px 15px rgba(0,0,0,0.2)', '0 25px 50px rgba(0,229,255,0.6)'],
+  backgroundColor: ['hsl(210, 100%, 50%)', '#ff6b00'],
+  duration: 900,
+  easing: 'spring'
+});
+```
+
+### 3. 2D Matrix Grid Stagger Ripple
 ```javascript
 import { animate, stagger } from 'studiomotion';
 
@@ -124,7 +150,7 @@ animate({
 });
 ```
 
-### 3. ScrollTrigger Viewport Scrubbing (`onScroll`)
+### 4. ScrollTrigger Viewport Scrubbing (`onScroll`)
 ```javascript
 import { onScroll } from 'studiomotion';
 
@@ -144,21 +170,64 @@ onScroll({
 });
 ```
 
-### 4. Chained Choreography Timeline
+### 5. Advanced Timeline Choreography
+Features `timeScale`, nested timelines, `set()`, `addCallback()`, and relative percentage offsets:
+
 ```javascript
 import { timeline } from 'studiomotion';
 
-const tl = timeline({ loop: false });
+const tl = timeline({ timeScale: 1.2 });
 
-tl.add({ targets: '#badge', scale: [0, 1], duration: 400, easing: 'spring' })
-  .addLabel('badgeReady')
-  .add({ targets: '#headline', translateY: [30, 0], opacity: [0, 1], duration: 500 }, '+=100')
-  .add({ targets: '.cta-button', scale: [0.8, 1], easing: 'spring', duration: 600 }, 'badgeReady');
+tl.set('.badge', { opacity: 0 })
+  .add({ targets: '.hero', translateY: [50, 0], duration: 600, easing: 'spring' })
+  .addCallback(() => console.log('Hero animation reached 300ms!'), 300)
+  .add({ targets: '.badge', opacity: 1, duration: 400 }, '+=50%')
+  .addLabel('contentReady')
+  .add({ targets: '.cta', scale: [0.8, 1], duration: 500, easing: 'spring' }, 'contentReady');
 
 tl.play();
 ```
 
-### 5. Kinetic Typography & Matrix Scramble
+### 6. First-Class Three.js 3D WebGL Adapter
+Direct 3D mesh vector manipulation, camera transitions, and group staggering:
+
+```javascript
+import * as THREE from 'three';
+import { animateThree, stagger } from 'studiomotion';
+
+// 1. Direct 3D Mesh Animation
+animateThree(mesh, {
+  position: { x: [0, 50], y: [0, 100], z: -20 },
+  rotation: { y: '1turn', x: '45deg' },     // Supports 'deg', 'turn', 'rad', or raw radians
+  scale: 2,                                // Scales x, y, z uniformly
+  material: { 
+    opacity: [0, 1], 
+    color: '#ff6b00'                       // Auto-sets Three.js Color
+  },
+  duration: 1200,
+  easing: 'spring'
+});
+
+// 2. Camera Projection Transitions (Auto-calls updateProjectionMatrix)
+animateThree(camera, {
+  fov: [45, 60],
+  zoom: [1, 1.5],
+  position: { z: 120 },
+  duration: 900,
+  easing: 'easeInOutCubic'
+});
+
+// 3. Staggering 3D Groups & Particle Meshes
+animateThree(meshGroup.children, {
+  position: { y: [0, 30] },
+  scale: [0.5, 1],
+  stagger: stagger(40, { from: 'center' }),
+  duration: 800,
+  easing: 'spring'
+});
+```
+
+### 7. Kinetic Typography & Matrix Scramble
 ```javascript
 import { text, animate, stagger } from 'studiomotion';
 
@@ -180,7 +249,7 @@ text.scramble('#cyberText', {
 });
 ```
 
-### 6. SVG Path Draw & Motion Path
+### 8. SVG Path Draw, Motion Paths & Auto-Segmenting Morph
 ```javascript
 import { svg } from 'studiomotion';
 
@@ -194,11 +263,11 @@ svg.createMotionPath('#rocket', '#curvePath', {
   easing: 'easeInOutCubic'
 });
 
-// Smooth SVG path morphing
+// Smooth SVG path morphing (Auto-samples & normalizes unequal point counts)
 svg.morphTo('#startPath', '#endPath', { duration: 1000, easing: 'spring' });
 ```
 
-### 7. Physics Draggable with Inertia
+### 9. Physics Draggable with Inertia
 ```javascript
 import { draggable } from 'studiomotion';
 
@@ -211,7 +280,7 @@ draggable('.card', {
 });
 ```
 
-### 8. FLIP Layout Transitions
+### 10. FLIP Layout Transitions
 ```javascript
 import { layout } from 'studiomotion';
 
@@ -225,33 +294,7 @@ container.appendChild(item);
 flip.play({ duration: 500, easing: 'spring' });
 ```
 
-### 9. Three.js 3D WebGL Adapter
-```javascript
-import * as THREE from 'three';
-import { animate } from 'studiomotion';
-
-const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
-
-// Directly animate 3D rotation & scale vectors
-animate({
-  targets: mesh.rotation,
-  y: Math.PI * 2,
-  duration: 8000,
-  loop: true,
-  easing: 'linear'
-});
-
-animate({
-  targets: mesh.scale,
-  x: [0.5, 1.2, 1],
-  y: [0.5, 1.2, 1],
-  duration: 900,
-  easing: 'spring'
-});
-```
-
-### 10. Framework Integration & Auto-Cleanup (`scope`)
+### 11. Framework Integration & Auto-Cleanup (`scope`)
 ```javascript
 // React Hook Example
 import { useEffect, useRef } from 'react';
@@ -309,10 +352,12 @@ scramble('#status', 'CONNECTED');
 | **Gzip Bundle Size** | **~2.8 kB** | ~14 kB | ~60 kB+ |
 | **Zero Dependencies** | ✅ Yes | ✅ Yes | ⚠️ Multiple packages |
 | **Harmonic Spring Physics** | ✅ Built-in | ✅ Built-in | ⚠️ Paid plugin |
+| **Per-Property Keyframe Tracks** | ✅ Built-in | ✅ Built-in | ✅ Built-in |
+| **Three.js 3D WebGL Adapter** | ✅ `animateThree` (Zero boilerplate) | ⚠️ Manual Object | ⚠️ Manual Object |
 | **ScrollTrigger Scrubbing** | ✅ Built-in | ✅ Built-in | ⚠️ Paid/Separate |
 | **Kinetic Text Splitting** | ✅ Built-in | ✅ Built-in | ⚠️ Paid plugin |
-| **SVG Morph & Motion Paths**| ✅ Built-in | ✅ Built-in | ⚠️ Paid plugin |
-| **FLIP Layout Engine** | ✅ Built-in | ✅ Built-in | ⚠️ Paid plugin |
+| **SVG Morph & Motion Paths**| ✅ Built-in (Auto-sampling) | ✅ Built-in | ⚠️ Paid plugin |
+| **FLIP Layout Engine** | ✅ Built-in | ⚠️ Partial | ⚠️ Paid plugin |
 | **58+ Instant UI Recipes** | ✅ Built-in (`recipes.*`) | ❌ None | ❌ None |
 | **TypeScript Included** | ✅ `index.d.ts` | ✅ Included | ✅ Included |
 

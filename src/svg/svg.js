@@ -1,6 +1,73 @@
-
 import { toArray } from '../core/utils.js';
 import { Animation } from '../animation/animation.js';
+
+let helperSvgDoc = null;
+let helperSvgPath = null;
+
+function getHelperPath(d) {
+  if (typeof document === 'undefined') return null;
+  if (!helperSvgPath) {
+    helperSvgDoc = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    helperSvgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    helperSvgDoc.appendChild(helperSvgPath);
+    helperSvgDoc.style.position = 'absolute';
+    helperSvgDoc.style.width = '0px';
+    helperSvgDoc.style.height = '0px';
+    helperSvgDoc.style.visibility = 'hidden';
+    document.body?.appendChild(helperSvgDoc);
+  }
+  helperSvgPath.setAttribute('d', d);
+  return helperSvgPath;
+}
+
+export function samplePath(dOrElement, sampleCount = 60) {
+  let pathEl = null;
+  if (typeof dOrElement === 'string') {
+    const trimmed = dOrElement.trim();
+    if (trimmed.startsWith('<path') || trimmed.startsWith('M') || trimmed.startsWith('m') || /[a-z]/i.test(trimmed)) {
+      if (trimmed.startsWith('<path')) {
+        const match = trimmed.match(/d="([^"]+)"/);
+        pathEl = getHelperPath(match ? match[1] : trimmed);
+      } else {
+        pathEl = getHelperPath(trimmed);
+      }
+    } else if (typeof document !== 'undefined') {
+      pathEl = document.querySelector(dOrElement);
+    }
+  } else if (dOrElement && dOrElement.getTotalLength) {
+    pathEl = dOrElement;
+  }
+
+  if (!pathEl || !pathEl.getTotalLength) {
+    return null;
+  }
+
+  const len = pathEl.getTotalLength();
+  const points = [];
+  const count = Math.max(10, sampleCount);
+
+  for (let i = 0; i <= count; i++) {
+    const pt = pathEl.getPointAtLength((i / count) * len);
+    points.push({ x: pt.x, y: pt.y });
+  }
+
+  return { length: len, points };
+}
+
+export function createMorphablePaths(pathA, pathB, samples = 60) {
+  const sA = samplePath(pathA, samples);
+  const sB = samplePath(pathB, samples);
+  if (!sA || !sB) return null;
+
+  const count = Math.max(sA.points.length, sB.points.length);
+  const ptsA = sA.points;
+  const ptsB = sB.points;
+
+  const strA = ptsA.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(' ') + ' Z';
+  const strB = ptsB.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(' ') + ' Z';
+
+  return { pathA: strA, pathB: strB, count };
+}
 
 export const svg = {
   createDrawable: (targets, opts = {}) => {
@@ -19,8 +86,8 @@ export const svg = {
   },
 
   createMotionPath: (target, pathSelector, opts = {}) => {
-    const el = typeof target === 'string' ? document.querySelector(target) : target;
-    const path = typeof pathSelector === 'string' ? document.querySelector(pathSelector) : pathSelector;
+    const el = typeof target === 'string' ? (typeof document !== 'undefined' ? document.querySelector(target) : null) : target;
+    const path = typeof pathSelector === 'string' ? (typeof document !== 'undefined' ? document.querySelector(pathSelector) : null) : pathSelector;
     if (!el || !path || !path.getTotalLength) return;
 
     const len = path.getTotalLength();
@@ -41,37 +108,19 @@ export const svg = {
   },
 
   morphTo: (targetPath, endPathSelector, opts = {}) => {
-    const p1 = typeof targetPath === 'string' ? document.querySelector(targetPath) : targetPath;
-    const p2 = typeof endPathSelector === 'string' ? document.querySelector(endPathSelector) : endPathSelector;
-    if (!p1 || !p2 || !p1.getTotalLength || !p2.getTotalLength) return;
+    const p1 = typeof targetPath === 'string' ? (typeof document !== 'undefined' ? document.querySelector(targetPath) : null) : targetPath;
+    if (!p1) return;
 
-    const len1 = p1.getTotalLength();
-    const len2 = p2.getTotalLength();
-    const samples = opts.precision || 60;
-    const pts1 = [];
-    const pts2 = [];
+    const morphed = createMorphablePaths(p1, endPathSelector, opts.precision || 60);
+    if (!morphed) return;
 
-    for (let i = 0; i <= samples; i++) {
-      const pt1 = p1.getPointAtLength((i / samples) * len1);
-      const pt2 = p2.getPointAtLength((i / samples) * len2);
-      pts1.push(`${i === 0 ? 'M' : 'L'} ${pt1.x.toFixed(2)} ${pt1.y.toFixed(2)}`);
-      pts2.push(`${i === 0 ? 'M' : 'L'} ${pt2.x.toFixed(2)} ${pt2.y.toFixed(2)}`);
-    }
+    p1.setAttribute('d', morphed.pathA);
 
     return new Animation(Object.assign({}, {
       targets: p1,
+      d: [morphed.pathA, morphed.pathB],
       duration: opts.duration || 1000,
-      easing: opts.easing || 'easeInOutCubic',
-      onUpdate: anim => {
-        const d = pts1.map((p, i) => {
-          const [, x1, y1] = pts1[i].split(' ');
-          const [, x2, y2] = pts2[i].split(' ');
-          const curX = parseFloat(x1) + (parseFloat(x2) - parseFloat(x1)) * anim.progress;
-          const curY = parseFloat(y1) + (parseFloat(y2) - parseFloat(y1)) * anim.progress;
-          return `${i === 0 ? 'M' : 'L'} ${curX.toFixed(2)} ${curY.toFixed(2)}`;
-        }).join(' ') + ' Z';
-        p1.setAttribute('d', d);
-      }
+      easing: opts.easing || 'easeInOutCubic'
     }, opts));
   }
 };
